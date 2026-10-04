@@ -168,6 +168,7 @@ var COMMAND_TIMEOUT_MS = 1e4;
 var MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
 var POLL_INTERVAL_MS = 1e3;
 var FAILED_STATUSES = /* @__PURE__ */ new Set(["cancelled", "bounced", "failed"]);
+var deploymentArguments = ({ deployment }) => deployment === void 0 ? [] : ["--deployment", deployment];
 function required(value, label) {
   const normalized = value.trim();
   if (!normalized) throw new MailboxError("configuration", `${label} is required.`);
@@ -251,8 +252,7 @@ async function listEmails(run, config, { limit = 100, signal } = {}) {
       [
         "data",
         "emails",
-        "--deployment",
-        config.deployment,
+        ...deploymentArguments(config),
         "--component",
         config.component,
         "--limit",
@@ -272,8 +272,7 @@ async function getEmail(run, config, emailId, { signal } = {}) {
     await run(
       [
         "run",
-        "--deployment",
-        config.deployment,
+        ...deploymentArguments(config),
         "--component",
         config.component,
         "--codegen",
@@ -357,7 +356,7 @@ async function waitForEmail(list, get, options) {
 function createMailbox(options) {
   const config = {
     component: required(options.component ?? "resend", "component"),
-    deployment: required(options.deployment, "deployment"),
+    ...options.deployment === void 0 ? {} : { deployment: required(options.deployment, "deployment") },
     projectDirectory: (0, import_node_path.resolve)(required(options.projectDirectory, "projectDirectory"))
   };
   const run = createRunner(config.projectDirectory);

@@ -11,6 +11,7 @@ const COMMAND_TIMEOUT_MS = 10_000;
 const MAX_OUTPUT_BYTES = 4 * 1024 * 1024;
 const POLL_INTERVAL_MS = 1_000;
 const FAILED_STATUSES = new Set(["cancelled", "bounced", "failed"]);
+const deploymentArguments = ({ deployment }) => deployment === undefined ? [] : ["--deployment", deployment];
 function required(value, label) {
     const normalized = value.trim();
     if (!normalized)
@@ -88,8 +89,7 @@ async function listEmails(run, config, { limit = 100, signal } = {}) {
     return parseEmailList(await run([
         "data",
         "emails",
-        "--deployment",
-        config.deployment,
+        ...deploymentArguments(config),
         "--component",
         config.component,
         "--limit",
@@ -104,8 +104,7 @@ async function getEmail(run, config, emailId, { signal } = {}) {
     const id = required(emailId, "emailId");
     return parseEmailDetail(await run([
         "run",
-        "--deployment",
-        config.deployment,
+        ...deploymentArguments(config),
         "--component",
         config.component,
         "--codegen",
@@ -182,7 +181,9 @@ async function waitForEmail(list, get, options) {
 export function createMailbox(options) {
     const config = {
         component: required(options.component ?? "resend", "component"),
-        deployment: required(options.deployment, "deployment"),
+        ...(options.deployment === undefined
+            ? {}
+            : { deployment: required(options.deployment, "deployment") }),
         projectDirectory: resolve(required(options.projectDirectory, "projectDirectory")),
     };
     const run = createRunner(config.projectDirectory);

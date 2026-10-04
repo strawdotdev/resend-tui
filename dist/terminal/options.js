@@ -4,13 +4,13 @@ Read-only terminal mailbox for the Convex Resend component.
 
 Options:
   --project <directory>     Convex project directory (required)
-  --deployment <selector>  Convex deployment selector (default: dev)
+  --deployment <selector>  Convex deployment selector (default: the project's own)
   --component <path>       Mounted component path (default: resend)
   --help                    Show this help
 `;
 export function parseTerminalOptions(arguments_) {
     let projectDirectory;
-    let deployment = "dev";
+    let deployment;
     let component = "resend";
     let help = false;
     const values = {
@@ -42,6 +42,11 @@ export function parseTerminalOptions(arguments_) {
     }
     if (!help && !projectDirectory)
         throw new Error("--project is required.");
-    return { component, deployment, help, projectDirectory: projectDirectory ?? "." };
+    return {
+        component,
+        ...(deployment === undefined ? {} : { deployment }),
+        help,
+        projectDirectory: projectDirectory ?? ".",
+    };
 }
 //# sourceMappingURL=options.js.map

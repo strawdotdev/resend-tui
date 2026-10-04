@@ -19,7 +19,7 @@ import { createMailbox, getEmailActionUrl } from "@strawdev/resend-tui";
 
 const mailbox = createMailbox({
   projectDirectory: "/absolute/path/to/convex-project",
-  deployment: "dev",
+  deployment: "dev", // optional: without it, the project's own selection (its .env.local)
   component: "resend", // optional default
 });
 
@@ -39,7 +39,7 @@ const action = getEmailActionUrl(email, "/api/auth/verify-email");
 The terminal application requires [Bun](https://bun.sh/) and an interactive terminal. It never opens a link until the user explicitly selects one.
 
 ```sh
-resend-tui --project ./packages/backend --deployment dev --component resend
+resend-tui --project ./packages/backend --component resend
 ```
 
 Run `resend-tui --help` for the full option list.

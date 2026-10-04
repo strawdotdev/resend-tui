@@ -34,7 +34,9 @@ export type MailboxEmail = EmailSummary & {
 
 export type MailboxOptions = {
   projectDirectory: string;
-  deployment: string;
+  /** A Convex deployment selector; without one the project's own selection is used (its
+   * `.env.local`, which may hold a deploy key that `--deployment` cannot be combined with). */
+  deployment?: string;
   component?: string;
 };
 

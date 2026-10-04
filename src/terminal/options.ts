@@ -6,7 +6,7 @@ Read-only terminal mailbox for the Convex Resend component.
 
 Options:
   --project <directory>     Convex project directory (required)
-  --deployment <selector>  Convex deployment selector (default: dev)
+  --deployment <selector>  Convex deployment selector (default: the project's own)
   --component <path>       Mounted component path (default: resend)
   --help                    Show this help
 `;
@@ -15,7 +15,7 @@ export type TerminalOptions = MailboxOptions & { help: boolean };
 
 export function parseTerminalOptions(arguments_: readonly string[]): TerminalOptions {
   let projectDirectory: string | undefined;
-  let deployment = "dev";
+  let deployment: string | undefined;
   let component = "resend";
   let help = false;
   const values: Record<string, (value: string) => void> = {
@@ -47,5 +47,10 @@ export function parseTerminalOptions(arguments_: readonly string[]): TerminalOpt
   }
 
   if (!help && !projectDirectory) throw new Error("--project is required.");
-  return { component, deployment, help, projectDirectory: projectDirectory ?? "." };
+  return {
+    component,
+    ...(deployment === undefined ? {} : { deployment }),
+    help,
+    projectDirectory: projectDirectory ?? ".",
+  };
 }

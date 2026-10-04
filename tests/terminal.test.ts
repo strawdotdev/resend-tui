@@ -21,6 +21,7 @@ describe("terminal controls", () => {
       help: false,
       projectDirectory: "/tmp/project with spaces",
     });
+    expect(parseTerminalOptions(["--project", "."]).deployment).toBeUndefined();
     expect(() => parseTerminalOptions([])).toThrow("--project is required");
     expect(() => parseTerminalOptions(["--project", ".", "--unknown"])).toThrow("Unknown option");
   });

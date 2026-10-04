@@ -1,6 +1,6 @@
 {
   "name": "@strawdev/resend-tui",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Read and inspect email from the Convex Resend component.",
   "homepage": "https://github.com/strawdotdev/resend-tui#readme",
   "bugs": "https://github.com/strawdotdev/resend-tui/issues",

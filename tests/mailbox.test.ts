@@ -125,6 +125,27 @@ describe.sequential("mailbox client", () => {
     await expect(mailbox.listEmails({ limit: 501 })).rejects.toThrow(RangeError);
   });
 
+  test("leaves the deployment to the project when none is selected", async () => {
+    const mailbox = createMailbox({ projectDirectory });
+    await mailbox.listEmails({ limit: 5 });
+    const calls = (await readFile(callsPath, "utf8"))
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line));
+    expect(calls.at(-1)).toEqual([
+      "data",
+      "emails",
+      "--component",
+      "resend",
+      "--limit",
+      "5",
+      "--order",
+      "desc",
+      "--format",
+      "json",
+    ]);
+  });
+
   test("matches recipient, subject and timestamp before returning delivered detail", async () => {
     await writeFixture({
       list: [

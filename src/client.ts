@@ -25,7 +25,10 @@ const FAILED_STATUSES = new Set(["cancelled", "bounced", "failed"]);
 
 type ConvexManifest = { bin?: string | Record<string, string> };
 type RunConvex = (arguments_: string[], signal?: AbortSignal) => Promise<string>;
-type ResolvedOptions = { component: string; deployment: string; projectDirectory: string };
+type ResolvedOptions = { component: string; deployment?: string; projectDirectory: string };
+
+const deploymentArguments = ({ deployment }: ResolvedOptions) =>
+  deployment === undefined ? [] : ["--deployment", deployment];
 
 function required(value: string, label: string) {
   const normalized = value.trim();
@@ -122,8 +125,7 @@ async function listEmails(
       [
         "data",
         "emails",
-        "--deployment",
-        config.deployment,
+        ...deploymentArguments(config),
         "--component",
         config.component,
         "--limit",
@@ -149,8 +151,7 @@ async function getEmail(
     await run(
       [
         "run",
-        "--deployment",
-        config.deployment,
+        ...deploymentArguments(config),
         "--component",
         config.component,
         "--codegen",
@@ -251,7 +252,9 @@ async function waitForEmail(
 export function createMailbox(options: MailboxOptions): Mailbox {
   const config = {
     component: required(options.component ?? "resend", "component"),
-    deployment: required(options.deployment, "deployment"),
+    ...(options.deployment === undefined
+      ? {}
+      : { deployment: required(options.deployment, "deployment") }),
     projectDirectory: resolve(required(options.projectDirectory, "projectDirectory")),
   };
   const run = createRunner(config.projectDirectory);
